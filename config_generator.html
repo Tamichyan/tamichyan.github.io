@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NewAPI 配置生成器</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 14px;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .account-card {
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            position: relative;
+            background: #f9f9f9;
+        }
+
+        .account-card h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #333;
+            font-weight: 500;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .form-group small {
+            color: #666;
+            font-size: 12px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-success {
+            background: #48bb78;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #38a169;
+        }
+
+        .btn-danger {
+            background: #f56565;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #e53e3e;
+        }
+
+        .btn-secondary {
+            background: #718096;
+            color: white;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .remove-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+        }
+
+        .result-section {
+            margin-top: 30px;
+            padding: 20px;
+            background: #f7fafc;
+            border-radius: 8px;
+            border: 2px solid #e0e0e0;
+        }
+
+        .result-section h3 {
+            color: #2d3748;
+            margin-bottom: 15px;
+        }
+
+        .code-block {
+            background: #2d3748;
+            color: #48bb78;
+            padding: 15px;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            overflow-x: auto;
+            margin-bottom: 10px;
+            position: relative;
+        }
+
+        .copy-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            padding: 5px 10px;
+            font-size: 12px;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .tab {
+            padding: 10px 20px;
+            border: none;
+            background: #e0e0e0;
+            border-radius: 6px 6px 0 0;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        .tab.active {
+            background: #667eea;
+            color: white;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .tips {
+            background: #fef3c7;
+            border-left: 4px solid #f59e0b;
+            padding: 15px;
+            margin-top: 20px;
+            border-radius: 4px;
+        }
+
+        .tips h4 {
+            color: #92400e;
+            margin-bottom: 10px;
+        }
+
+        .tips ul {
+            margin-left: 20px;
+            color: #78350f;
+        }
+
+        .tips li {
+            margin-bottom: 5px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 0;
+                border-radius: 0;
+            }
+
+            .content {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 NewAPI 配置生成器</h1>
+            <p>轻松生成多账号签到配置，无需手动编写 JSON</p>
+        </div>
+
+        <div class="content">
+            <div id="accounts-container"></div>
+
+            <div class="btn-group">
+                <button class="btn btn-primary" onclick="addAccount()">➕ 添加账号</button>
+                <button class="btn btn-success" onclick="generateConfig()">✨ 生成配置</button>
+            </div>
+
+            <div class="btn-group" style="margin-top: 10px;">
+                <button class="btn btn-secondary" onclick="saveToLocal()">💾 保存到本地</button>
+                <button class="btn btn-secondary" onclick="loadFromLocal()">📂 从本地加载</button>
+                <button class="btn btn-danger" onclick="clearLocal()">🗑️ 清除本地数据</button>
+            </div>
+
+            <div class="tips" style="margin-top: 20px; background: #fff3cd; border-left-color: #ffc107;">
+                <h4>💡 关于本地存储：</h4>
+                <ul>
+                    <li><strong>保存到本地：</strong>将配置保存到浏览器本地存储，下次访问自动加载</li>
+                    <li><strong>仅在本机有效：</strong>换电脑或换浏览器需要重新填写</li>
+                    <li><strong>明文存储：</strong>数据以明文形式存储在浏览器中，请注意安全</li>
+                    <li><strong>建议：</strong>私人电脑可使用本地存储，公共电脑请勿使用</li>
+                </ul>
+            </div>
+
+            <div id="result" class="result-section" style="display: none;">
+                <h3>📋 生成的配置</h3>
+
+                <div class="tabs">
+                    <button class="tab active" onclick="switchTab('json')">JSON 格式（推荐）</button>
+                    <button class="tab" onclick="switchTab('simple')">简单格式</button>
+                </div>
+
+                <div id="json-tab" class="tab-content active">
+                    <div class="code-block">
+                        <button class="btn btn-secondary copy-btn" onclick="copyToClipboard('json')">复制</button>
+                        <pre id="json-output"></pre>
+                    </div>
+                </div>
+
+                <div id="simple-tab" class="tab-content">
+                    <div class="code-block">
+                        <button class="btn btn-secondary copy-btn" onclick="copyToClipboard('simple')">复制</button>
+                        <pre id="simple-output"></pre>
+                    </div>
+                </div>
+
+                <div class="tips">
+                    <h4>💡 使用方法：</h4>
+                    <ul>
+                        <li><strong>GitHub Actions：</strong>复制上面的配置，在仓库的 Settings → Secrets → New repository secret 中添加名为 <code>NEWAPI_ACCOUNTS</code> 的 Secret</li>
+                        <li><strong>本地运行：</strong>将配置设置为环境变量 <code>NEWAPI_ACCOUNTS</code></li>
+                        <li><strong>格式推荐：</strong>JSON 格式支持备注，更易于管理多个站点</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let accountCount = 0;
+
+        // 页面加载时添加第一个账号
+        window.onload = function() {
+            addAccount();
+        };
+
+        function addAccount() {
+            accountCount++;
+            const container = document.getElementById('accounts-container');
+
+            const accountCard = document.createElement('div');
+            accountCard.className = 'account-card';
+            accountCard.id = `account-${accountCount}`;
+            accountCard.innerHTML = `
+                <h3>账号 ${accountCount}</h3>
+                ${accountCount > 1 ? `<button class="btn btn-danger btn-sm remove-btn" onclick="removeAccount(${accountCount})">删除</button>` : ''}
+
+                <div class="form-group">
+                    <label>站点 URL *</label>
+                    <input type="text" id="url-${accountCount}" placeholder="https://api.example.com" required>
+                    <small>完整的站点地址，如 https://api.example.com</small>
+                </div>
+
+                <div class="form-group">
+                    <label>Session Cookie *</label>
+                    <input type="text" id="session-${accountCount}" placeholder="MTc2NzQxMzYzM3xEWDhFQVFMX2..." required>
+                    <small>从浏览器开发者工具中获取的 session 值</small>
+                </div>
+
+                <div class="form-group">
+                    <label>用户ID *</label>
+                    <input type="text" id="userid-${accountCount}" placeholder="123" required>
+                    <small>你的用户ID，通常是用户名中的数字（如 user_123 的ID是 123）<br>⚠️ 必填字段，缺少会导致签到失败</small>
+                </div>
+
+                <div class="form-group">
+                    <label>CF Clearance（可选）</label>
+                    <input type="text" id="cfclearance-${accountCount}" placeholder="xxsCgaPMM5nd4S2X...">
+                    <small>仅当站点有 Cloudflare 防护时需要填写，从 Cookie 中获取 cf_clearance 的值</small>
+                </div>
+
+                <div class="form-group">
+                    <label>备注名称（可选）</label>
+                    <input type="text" id="name-${accountCount}" placeholder="主力站 / 备用站">
+                    <small>便于识别，不填则显示为"站点X"</small>
+                </div>
+            `;
+
+            container.appendChild(accountCard);
+        }
+
+        function removeAccount(id) {
+            const account = document.getElementById(`account-${id}`);
+            if (account) {
+                account.remove();
+            }
+        }
+
+        function switchTab(tab) {
+            // 切换标签页样式
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+
+            if (tab === 'json') {
+                document.querySelector('.tab:nth-child(1)').classList.add('active');
+                document.getElementById('json-tab').classList.add('active');
+            } else {
+                document.querySelector('.tab:nth-child(2)').classList.add('active');
+                document.getElementById('simple-tab').classList.add('active');
+            }
+        }
+
+        function generateConfig() {
+            const accounts = [];
+            const accountCards = document.querySelectorAll('.account-card');
+
+            let hasError = false;
+            accountCards.forEach(card => {
+                const id = card.id.split('-')[1];
+                const url = document.getElementById(`url-${id}`).value.trim();
+                const session = document.getElementById(`session-${id}`).value.trim();
+                const userId = document.getElementById(`userid-${id}`).value.trim();
+                const cfClearance = document.getElementById(`cfclearance-${id}`).value.trim();
+                const name = document.getElementById(`name-${id}`).value.trim();
+
+                if (!url || !session || !userId) {
+                    alert(`账号 ${id}: URL、Session 和 用户ID 不能为空`);
+                    hasError = true;
+                    return;
+                }
+
+                const account = {
+                    url: url.startsWith('http') ? url : 'https://' + url,
+                    session: session,
+                    user_id: userId,
+                    name: name || `站点${id}`
+                };
+
+                // 如果提供了 cf_clearance，添加到配置中
+                if (cfClearance) {
+                    account.cf_clearance = cfClearance;
+                }
+
+                accounts.push(account);
+            });
+
+            if (hasError || accounts.length === 0) {
+                return;
+            }
+
+            // 生成 JSON 格式
+            const jsonConfig = JSON.stringify(accounts, null, 2);
+            document.getElementById('json-output').textContent = jsonConfig;
+
+            // 生成简单格式
+            const simpleConfig = accounts.map(acc => `${acc.url}#${acc.session}`).join(',');
+            document.getElementById('simple-output').textContent = simpleConfig;
+
+            // 显示结果
+            document.getElementById('result').style.display = 'block';
+            document.getElementById('result').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function copyToClipboard(format) {
+            const text = format === 'json'
+                ? document.getElementById('json-output').textContent
+                : document.getElementById('simple-output').textContent;
+
+            const btn = event.target;
+            const originalText = btn.textContent;
+
+            // 尝试现代 API
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(text).then(() => {
+                    btn.textContent = '✅ 已复制！';
+                    btn.style.background = '#48bb78';
+
+                    setTimeout(() => {
+                        btn.textContent = originalText;
+                        btn.style.background = '';
+                    }, 2000);
+                }).catch(err => {
+                    // 失败时使用备用方案
+                    fallbackCopy(text, btn, originalText);
+                });
+            } else {
+                // 浏览器不支持现代 API,使用备用方案
+                fallbackCopy(text, btn, originalText);
+            }
+        }
+
+        // 备用复制方案
+        function fallbackCopy(text, btn, originalText) {
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            textarea.style.position = 'fixed';
+            textarea.style.top = '-9999px';
+            textarea.style.left = '-9999px';
+            document.body.appendChild(textarea);
+
+            try {
+                textarea.select();
+                textarea.setSelectionRange(0, 99999); // 移动端兼容
+
+                const successful = document.execCommand('copy');
+                document.body.removeChild(textarea);
+
+                if (successful) {
+                    btn.textContent = '✅ 已复制！';
+                    btn.style.background = '#48bb78';
+
+                    setTimeout(() => {
+                        btn.textContent = originalText;
+                        btn.style.background = '';
+                    }, 2000);
+                } else {
+                    throw new Error('execCommand failed');
+                }
+            } catch (err) {
+                document.body.removeChild(textarea);
+                // 自动选中文本,提示用户手动复制
+                const outputElement = document.getElementById(
+                    btn.closest('.tab-content').querySelector('pre').id
+                );
+                const selection = window.getSelection();
+                const range = document.createRange();
+                range.selectNodeContents(outputElement);
+                selection.removeAllRanges();
+                selection.addRange(range);
+
+                btn.textContent = '⚠️ 请手动复制';
+                btn.style.background = '#f59e0b';
+                alert('自动复制失败，已为您选中文本，请按 Ctrl+C (Mac: Cmd+C) 手动复制');
+
+                setTimeout(() => {
+                    btn.textContent = originalText;
+                    btn.style.background = '';
+                }, 3000);
+            }
+        }
+
+        // ========== 本地存储功能 ==========
+
+        const STORAGE_KEY = 'newapi_checkin_accounts';
+
+        // 页面加载时自动检查本地存储
+        window.addEventListener('load', function() {
+            checkLocalStorage();
+        });
+
+        function checkLocalStorage() {
+            const savedData = localStorage.getItem(STORAGE_KEY);
+            if (savedData) {
+                const notice = document.createElement('div');
+                notice.style.cssText = 'background: #d4edda; border: 1px solid #c3e6cb; color: #155724; padding: 15px; border-radius: 6px; margin-bottom: 20px;';
+                notice.innerHTML = `
+                    <strong>💡 发现本地保存的配置</strong><br>
+                    检测到您之前保存的配置，点击"从本地加载"按钮可恢复。
+                `;
+                const container = document.querySelector('.content');
+                container.insertBefore(notice, container.firstChild);
+            }
+        }
+
+        function saveToLocal() {
+            const accounts = [];
+            const accountCards = document.querySelectorAll('.account-card');
+
+            accountCards.forEach(card => {
+                const id = card.id.split('-')[1];
+                const url = document.getElementById(`url-${id}`).value.trim();
+                const session = document.getElementById(`session-${id}`).value.trim();
+                const userId = document.getElementById(`userid-${id}`).value.trim();
+                const cfClearance = document.getElementById(`cfclearance-${id}`).value.trim();
+                const name = document.getElementById(`name-${id}`).value.trim();
+
+                if (url || session || userId || cfClearance || name) {
+                    accounts.push({ url, session, userId, cfClearance, name });
+                }
+            });
+
+            if (accounts.length === 0) {
+                alert('⚠️ 没有可保存的配置');
+                return;
+            }
+
+            try {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(accounts));
+                alert(`✅ 成功保存 ${accounts.length} 个账号配置到本地！\n\n⚠️ 提示：Session Cookie 以明文形式存储，请注意安全。`);
+            } catch (e) {
+                alert('❌ 保存失败：' + e.message);
+            }
+        }
+
+        function loadFromLocal() {
+            const savedData = localStorage.getItem(STORAGE_KEY);
+
+            if (!savedData) {
+                alert('⚠️ 没有找到本地保存的配置');
+                return;
+            }
+
+            try {
+                const accounts = JSON.parse(savedData);
+
+                if (!Array.isArray(accounts) || accounts.length === 0) {
+                    alert('⚠️ 本地配置格式错误');
+                    return;
+                }
+
+                // 清空现有账号
+                document.getElementById('accounts-container').innerHTML = '';
+                accountCount = 0;
+
+                // 加载保存的账号
+                accounts.forEach((account, index) => {
+                    addAccount();
+                    const id = accountCount;
+                    document.getElementById(`url-${id}`).value = account.url || '';
+                    document.getElementById(`session-${id}`).value = account.session || '';
+                    document.getElementById(`userid-${id}`).value = account.userId || '';
+                    document.getElementById(`cfclearance-${id}`).value = account.cfClearance || '';
+                    document.getElementById(`name-${id}`).value = account.name || '';
+                });
+
+                alert(`✅ 成功加载 ${accounts.length} 个账号配置！`);
+            } catch (e) {
+                alert('❌ 加载失败：' + e.message);
+            }
+        }
+
+        function clearLocal() {
+            const savedData = localStorage.getItem(STORAGE_KEY);
+
+            if (!savedData) {
+                alert('⚠️ 没有本地保存的配置');
+                return;
+            }
+
+            if (confirm('⚠️ 确定要清除本地保存的配置吗？\n\n此操作不可恢复！')) {
+                try {
+                    localStorage.removeItem(STORAGE_KEY);
+                    alert('✅ 已清除本地配置');
+                    location.reload();
+                } catch (e) {
+                    alert('❌ 清除失败：' + e.message);
+                }
+            }
+        }
+    </script>
+</body>
+</html>
